@@ -77,6 +77,8 @@ p {
   list-style: none;
   display: flex;
   gap: 30px;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar a {
@@ -90,6 +92,7 @@ p {
 .navbar a:hover {
   color: #0077ff;
 }
+
 
 /* To offset content from fixed navbar */
 body {
