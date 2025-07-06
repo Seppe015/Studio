@@ -1,44 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>My Modern Website</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Route Optimizer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <nav class="navbar">
-    <ul>
-      <li><a href="#about">About</a></li> <li><a href="#projects">Projects</a></li> <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
-  
-  <!-- Placeholder sections for navigation -->
-  <section id="about"></section>
-  
-  <section id="projects" class="projects">
-  <h2>Projects</h2>
-  <div class="project-grid">
-    <div class="project-card">
-      <h3>Project One</h3>
-      <p>A brief description of what this project is about. Built using HTML and CSS.</p>
-      <a href="#" target="_blank">View Project</a>
-    </div>
-    <div class="project-card">
-      <h3>Project Two</h3>
-      <p>This one showcases some JavaScript functionality. Mobile-friendly design.</p>
-      <a href="#" target="_blank">View Project</a>
-    </div>
-    <div class="project-card">
-      <h3>Project Three</h3>
-      <p>Example project hosted on GitHub Pages. Open-source and simple.</p>
-      <a href="#" target="_blank">View Project</a>
-    </div>
-  </div>
-</section>
+    <div class="container">
+        <header>
+            <h1>Delivery Route Optimizer</h1>
+            <p>Optimize your delivery routes to minimize time and distance</p>
+        </header>
 
-  <section id="contact"></section>
-  <img src="profile.jpg" alt="My Logo" class="profile-img" />
-  <h1>Welcome to My Website</h1>
-  <p>This is a clean, modern look powered by HTML and CSS. Built with ❤️ using GitHub Pages.</p>
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-tabs">
+                    <button class="tab-button active" onclick="switchTab('upload', this)">File Upload</button>
+                    <button class="tab-button" onclick="switchTab('manual', this)">Manual Entry</button>
+                    <button class="tab-button" onclick="switchTab('settings', this)">Settings</button>
+                </div>
+
+                <!-- File Upload Tab -->
+                <div id="upload-tab" class="tab-content active">
+                    <h3>Upload Address File</h3>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display: none;">
+                        <div class="upload-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <p>Click to upload or drag and drop</p>
+                            <p class="file-types">Supports CSV, Excel files</p>
+                        </div>
+                    </div>
+                    <div id="filePreview" class="file-preview" style="display: none;">
+                        <h4>File Preview</h4>
+                        <div id="previewContent"></div>
+                    </div>
+                </div>
+
+                <!-- Manual Entry Tab -->
+                <div id="manual-tab" class="tab-content">
+                    <h3>Manual Address Entry</h3>
+                    <div class="starting-point">
+                        <label for="startingAddress">Starting Point (Depot):</label>
+                        <input type="text" id="startingAddress" placeholder="Enter your starting address">
+                        <button onclick="validateStartingPoint()">Validate</button>
+                    </div>
+                    <div class="address-entry">
+                        <label for="newAddress">Add Delivery Address:</label>
+                        <input type="text" id="newAddress" placeholder="Enter delivery address">
+                        <button onclick="addAddress()">Add Address</button>
+                    </div>
+                    <div id="addressList" class="address-list">
+                        <h4>Delivery Addresses</h4>
+                        <div id="addresses"></div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <h3>Optimization Settings</h3>
+                    <div class="settings-group">
+                        <label for="maxDistance">Maximum Distance (km):</label>
+                        <input type="number" id="maxDistance" value="100" min="1" max="500">
+                        <small>Addresses beyond this distance will be flagged for postal delivery</small>
+                    </div>
+                    <div class="settings-group">
+                        <label for="maxTime">Maximum Additional Time (hours):</label>
+                        <input type="number" id="maxTime" value="2" min="0.5" max="10" step="0.5">
+                        <small>Addresses that add more than this time to the route will be flagged</small>
+                    </div>
+                    <div class="settings-group">
+                        <label for="vehicleType">Vehicle Type:</label>
+                        <select id="vehicleType">
+                            <option value="driving-car">Car</option>
+                            <option value="driving-hgv">Truck</option>
+                            <option value="cycling-regular">Bicycle</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="optimizeBtn" onclick="optimizeRoute()" disabled>Optimize Route</button>
+                    <button id="clearBtn" onclick="clearAll()">Clear All</button>
+                </div>
+            </div>
+
+            <div class="map-section">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button onclick="exportRoute()">Export Route</button>
+                    <button onclick="printDirections()">Print Directions</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <h3>Optimization Results</h3>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h4>Route Summary</h4>
+                    <div id="routeSummary"></div>
+                </div>
+                <div class="result-card">
+                    <h4>Regular Deliveries</h4>
+                    <div id="regularDeliveries"></div>
+                </div>
+                <div class="result-card">
+                    <h4>Postal Deliveries</h4>
+                    <div id="postalDeliveries"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Optimizing route...</p>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="js/mapManager.js"></script>
+    <script src="js/fileHandler.js"></script>
+    <script src="js/geocoding.js"></script>
+    <script src="js/routeOptimizer.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
