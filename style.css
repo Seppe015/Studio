@@ -1,16 +1,51 @@
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body Styling */
 body {
-  background-color: #f4f4f4;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 50px;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
 }
 
+/* Heading */
 h1 {
-  color: #2c3e50;
-  font-size: 3em;
+  font-size: 3rem;
+  color: #222;
+  margin-bottom: 10px;
 }
 
+/* Paragraph */
 p {
-  color: #555;
-  font-size: 1.2em;
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 600px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Button (if you want to add one later) */
+.button {
+  display: inline-block;
+  background: #0077ff;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.button:hover {
+  background: #005fd1;
 }
